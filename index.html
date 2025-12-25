@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النظام الذكي لإدارة المدرسة - Smart School System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        :root {
+            --primary: #1e3a5f;
+            --secondary: #2563eb;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .gradient-accent {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            right: 0;
+            width: 0;
+            height: 3px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+
+        .toast {
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scroll-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s;
+        }
+
+        .hover-lift:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 left-4 z-50 space-y-2"></div>
+
+    <!-- Navigation -->
+    <nav class="gradient-bg shadow-lg sticky top-0 z-50 backdrop-blur-md bg-opacity-95">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur">
+                        <i class="fas fa-school text-white text-xl"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-white font-bold text-lg">WE School</h1>
+                        <p class="text-blue-200 text-xs">WE EL_Mansura School</p>
+                    </div>
+                </div>
+                <div class="hidden lg:flex items-center gap-2">
+                    <a href="#" onclick="showPage('home')"
+                        class="nav-link text-white px-4 py-2 rounded-lg hover:bg-white/10 transition font-medium">الرئيسية</a>
+                    <a href="#" onclick="showPage('news')"
+                        class="nav-link text-white px-4 py-2 rounded-lg hover:bg-white/10 transition font-medium">الأخبار</a>
+                    <a href="#" onclick="showPage('events')"
+                        class="nav-link text-white px-4 py-2 rounded-lg hover:bg-white/10 transition font-medium">المناسبات</a>
+                    <a href="#" onclick="showPage('radio')"
+                        class="nav-link text-white px-4 py-2 rounded-lg hover:bg-white/10 transition font-medium">الإذاعة</a>
+                    <a href="#" onclick="showPage('competitions')"
+                        class="nav-link text-white px-4 py-2 rounded-lg hover:bg-white/10 transition font-medium">المسابقات</a>
+                    <a href="#" onclick="showPage('sports')"
+                        class="nav-link text-white px-4 py-2 rounded-lg hover:bg-white/10 transition font-medium">الرياضة</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- <button onclick="toggleLanguage()"
+                        class="hidden md:flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-globe"></i>
+                        <span id="langLabel">عربي</span>
+                    </button> -->
+                    <button onclick="openLoginModal()"
+                        class="gradient-accent hover:opacity-90 text-white px-5 py-2 rounded-full font-bold transition shadow-lg flex items-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="hidden sm:inline">دخول</span>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="lg:hidden text-white text-2xl p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-blue-900/98 backdrop-blur px-4 py-4 border-t border-white/10">
+            <div class="space-y-2">
+                <a href="#" onclick="showPage('home')"
+                    class="block text-white py-3 px-4 rounded-lg hover:bg-white/10 transition border-r-4 border-transparent hover:border-green-400">
+                    <i class="fas fa-home ml-2 w-6"></i>الرئيسية
+                </a>
+                <a href="#" onclick="showPage('news')"
+                    class="block text-white py-3 px-4 rounded-lg hover:bg-white/10 transition border-r-4 border-transparent hover:border-green-400">
+                    <i class="fas fa-newspaper ml-2 w-6"></i>الأخبار
+                </a>
+                <a href="#" onclick="showPage('events')"
+                    class="block text-white py-3 px-4 rounded-lg hover:bg-white/10 transition border-r-4 border-transparent hover:border-green-400">
+                    <i class="fas fa-calendar-check text-4xl"></i>المناسبات
+                </a>
+                <a href="#" onclick="showPage('radio')"
+                    class="block text-white py-3 px-4 rounded-lg hover:bg-white/10 transition border-r-4 border-transparent hover:border-green-400">
+                    <i class="fas fa-microphone-alt ml-2 w-6"></i>الإذاعة
+                </a>
+                <a href="#" onclick="showPage('competitions')"
+                    class="block text-white py-3 px-4 rounded-lg hover:bg-white/10 transition border-r-4 border-transparent hover:border-green-400">
+                    <i class="fas fa-trophy ml-2 w-6"></i>المسابقات
+                </a>
+                <a href="#" onclick="showPage('sports')"
+                    class="block text-white py-3 px-4 rounded-lg hover:bg-white/10 transition border-r-4 border-transparent hover:border-green-400">
+                    <i class="fas fa-futbol ml-2 w-6"></i>الرياضة
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Home Page -->
+        <section id="homePage" class="fade-in">
+            <!-- Hero Section -->
+            <div class="relative gradient-bg hero-pattern text-white py-20 lg:py-28 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-600/60"></div>
+                <div class="container mx-auto px-4 relative z-10">
+                    <div class="flex flex-col lg:flex-row items-center gap-12">
+                        <div class="lg:w-1/2 text-center lg:text-right">
+                            <div
+                                class="inline-flex items-center gap-2 bg-white/10 backdrop-blur px-4 py-2 rounded-full mb-6">
+                                <span class="w-2 h-2 bg-green-400 rounded-full pulse"></span>
+                                <span class="text-sm">نحو تعليم رقمي متطور</span>
+                            </div>
+                            <h2 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight">
+                                مرحباً بكم في<br>
+                                <span class="text-green-400">النظام الذكي</span><br>للمدرسة
+                            </h2>
+                            <p class="text-xl text-blue-100 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                                حيث يلتقي الإبداع بالتكنولوجيا لنقدم أفضل تجربة تعليمية متكاملة لإدارة المدرسة
+                            </p>
+                            <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                                <button onclick="openLoginModal()"
+                                    class="gradient-accent hover:opacity-90 px-8 py-4 rounded-full font-bold transition shadow-xl flex items-center gap-3 hover:scale-105 transform">
+                                    <i class="fas fa-rocket"></i>
+                                    ابدأ الآن
+                                </button>
+                                <button onclick="showPage('news')"
+                                    class="bg-white/10 hover:bg-white/20 backdrop-blur px-8 py-4 rounded-full font-bold transition flex items-center gap-3">
+                                    <i class="fas fa-compass"></i>
+                                    استكشف
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-center lg:justify-start gap-8 mt-10">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-green-400">1,250+</div>
+                                    <div class="text-blue-200 text-sm">طلاب</div>
+                                </div>
+                                <div class="w-px h-12 bg-white/20"></div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold text-green-400">85+</div>
+                                    <div class="text-blue-200 text-sm">معلمين</div>
+                                </div>
+                                <div class="w-px h-12 bg-white/20 hidden sm:block"></div>
+                                <div class="text-center hidden sm:block">
+                                    <div class="text-3xl font-bold text-green-400">120+</div>
+                                    <div class="text-blue-200 text-sm">إنجازات</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:w-1/2 flex justify-center">
+                            <div class="relative">
+                                <div
+                                    class="w-72 h-72 md:w-96 md:h-96 bg-white/10 backdrop-blur rounded-full flex items-center justify-center animate-float">
+                                    <i
+                                        class="fas fa-graduation-cap text-8xl md:text-9xl text-white drop-shadow-2xl"></i>
+                                </div>
+                                <div
+                                    class="absolute -top-4 -right-4 w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center shadow-xl bounce">
+                                    <i class="fas fa-star text-yellow-800 text-2xl"></i>
+                                </div>
+                                <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-green-400 rounded-full flex items-center justify-center shadow-xl bounce"
+                                    style="animation-delay: 0.5s">
+                                    <i class="fas fa-award text-green-800 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50 to-transparent"></div>
+            </div>
+            
+
+            <!-- Quick Stats -->
+            <div class="container mx-auto px-4 -mt-8 relative z-20">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-2xl shadow-xl p-6 text-center card-hover group">
+                        <div
+                            class="w-16 h-16 mx-auto bg-blue-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-500 transition">
+                            <i class="fas fa-users text-blue-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-blue-600">1,250</h3>
+                        <p class="text-gray-500 font-medium">طالب وطالبة</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-xl p-6 text-center card-hover group">
+                        <div
+                            class="w-16 h-16 mx-auto bg-green-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-500 transition">
+                            <i
+                                class="fas fa-chalkboard-teacher text-green-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-green-600">85</h3>
+                        <p class="text-gray-500 font-medium">معلماً ومعلمة</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-xl p-6 text-center card-hover group">
+                        <div
+                            class="w-16 h-16 mx-auto bg-purple-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-500 transition">
+                            <i class="fas fa-door-open text-purple-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-purple-600">45</h3>
+                        <p class="text-gray-500 font-medium">فصل دراسي</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-xl p-6 text-center card-hover group">
+                        <div
+                            class="w-16 h-16 mx-auto bg-orange-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-orange-500 transition">
+                            <i class="fas fa-trophy text-orange-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-orange-600">120</h3>
+                        <p class="text-gray-500 font-medium">إنجاز ووسام</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest News Slider -->
+            <div class="container mx-auto px-4 py-16">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800">أحدث الأخبار</h2>
+                        <p class="text-gray-500 mt-1">Stay updated with latest news</p>
+                    </div>
+                    <button onclick="showPage('news')"
+                        class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2">
+                        عرض الكل <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <div id="newsSlider" class="flex gap-6 overflow-x-auto scroll-hide pb-4">
+                        <!-- News items will be loaded here -->
+                    </div>
+                    <button onclick="scrollSlider('newsSlider', -400)"
+                        class="absolute -right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center text-gray-600 hover:text-blue-600 transition z-10 hidden md:flex">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button onclick="scrollSlider('newsSlider', 400)"
+                        class="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center text-gray-600 hover:text-blue-600 transition z-10 hidden md:flex">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">أقسام المدرسة</h2>
+                <p class="text-center text-gray-500 mb-12">تصفح جميع أقسام المدرسة من مكان واحد</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div onclick="showPage('news')"
+                        class="bg-white rounded-2xl shadow-lg p-6 text-center card-hover cursor-pointer group hover-lift">
+                        <div
+                            class="w-16 h-16 mx-auto bg-red-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-red-500 transition">
+                            <i class="fas fa-newspaper text-red-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">الأخبار</h3>
+                        <p class="text-sm text-gray-500 mt-1">آخر الأخبار والأنشطة</p>
+                    </div>
+                    <div onclick="showPage('events')"
+                        class="bg-white rounded-2xl shadow-lg p-6 text-center card-hover cursor-pointer group hover-lift">
+                        <div
+                            class="w-16 h-16 mx-auto bg-yellow-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-yellow-500 transition">
+                            <i
+                                class="fas fa-calendar-star text-yellow-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">المناسبات</h3>
+                        <p class="text-sm text-gray-500 mt-1">الفعاليات القادمة</p>
+                    </div>
+                    <div onclick="showPage('radio')"
+                        class="bg-white rounded-2xl shadow-lg p-6 text-center card-hover cursor-pointer group hover-lift">
+                        <div
+                            class="w-16 h-16 mx-auto bg-blue-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-500 transition">
+                            <i
+                                class="fas fa-microphone-alt text-blue-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">الإذاعة</h3>
+                        <p class="text-sm text-gray-500 mt-1">فقرات إذاعية متنوعة</p>
+                    </div>
+                    <div onclick="showPage('competitions')"
+                        class="bg-white rounded-2xl shadow-lg p-6 text-center card-hover cursor-pointer group hover-lift">
+                        <div
+                            class="w-16 h-16 mx-auto bg-purple-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-500 transition">
+                            <i class="fas fa-star text-purple-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">المسابقات</h3>
+                        <p class="text-sm text-gray-500 mt-1">مسابقات علمية وثقافية</p>
+                    </div>
+                    <div onclick="showPage('sports')"
+                        class="bg-white rounded-2xl shadow-lg p-6 text-center card-hover cursor-pointer group hover-lift">
+                        <div
+                            class="w-16 h-16 mx-auto bg-green-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-500 transition">
+                            <i class="fas fa-running text-green-600 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800">الرياضة</h3>
+                        <p class="text-sm text-gray-500 mt-1">أنشطة رياضية متنوعة</p>
+                    </div>
+                    <div onclick="openLoginModal()"
+                        class="bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl shadow-lg p-6 text-center card-hover cursor-pointer group hover-lift">
+                        <div
+                            class="w-16 h-16 mx-auto bg-gray-800 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-gray-700 transition">
+                            <i
+                                class="fas fa-user-graduate text-gray-400 text-2xl group-hover:text-white transition"></i>
+                        </div>
+                        <h3 class="font-bold text-white">الطلاب</h3>
+                        <p class="text-sm text-gray-400 mt-1">تسجيل دخول</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="bg-gradient-to-b from-gray-50 to-white py-16">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">مميزات النظام</h2>
+                        <p class="text-gray-500 max-w-2xl mx-auto">نقدم لكم نظام متكامل يساعد في إدارة المدرسة بكفاءة
+                            عالية</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-2xl shadow-lg p-8 text-center card-hover">
+                            <div
+                                class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-6">
+                                <i class="fas fa-shield-alt text-blue-600 text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">نظام صلاحيات آمن</h3>
+                            <p class="text-gray-500">نظام صلاحيات متكامل يضمن حماية البيانات وتحديد صلاحيات كل مستخدم
+                            </p>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-8 text-center card-hover">
+                            <div
+                                class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6">
+                                <i class="fas fa-mobile-alt text-green-600 text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">تصميم متجاوب</h3>
+                            <p class="text-gray-500">يعمل بسلاسة على جميع الأجهزة من موبايل وتابلت وكمبيوتر</p>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-8 text-center card-hover">
+                            <div
+                                class="w-20 h-20 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                                <i class="fas fa-bolt text-purple-600 text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">سرعة وأداء</h3>
+                            <p class="text-gray-500">تصميم محسن يوفر سرعة في التحميل وتجربة مستخدم سلسة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- News Page -->
+        <section id="newsPage" class="hidden fade-in">
+            <div class="gradient-bg text-white py-16 relative overflow-hidden">
+                <div class="absolute inset-0 hero-pattern opacity-30"></div>
+                <div class="container mx-auto px-4 relative z-10 text-center">
+                    <div
+                        class="w-20 h-20 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-newspaper text-4xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4">الأخبار و الانشطة</h2>
+                    <p class="text-blue-200 text-lg max-w-2xl mx-auto">تابع آخر الأخبار والأنشطة في المدرسة
+                    </p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 py-12">
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <button onclick="filterNews('all')"
+                        class="filter-btn active px-5 py-2 rounded-full bg-blue-600 text-white font-medium transition">الكل</button>
+                    <button onclick="filterNews('إنجاز')"
+                        class="filter-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-blue-600 hover:text-white transition">إنجازات</button>
+                    <button onclick="filterNews('أنشطة')"
+                        class="filter-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-blue-600 hover:text-white transition">أنشطة</button>
+                    <button onclick="filterNews('منشآت')"
+                        class="filter-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-blue-600 hover:text-white transition">منشآت</button>
+                    <button onclick="filterNews('تعليم')"
+                        class="filter-btn px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-blue-600 hover:text-white transition">تعليم</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="newsGrid">
+                    <!-- News items loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Page -->
+        <section id="eventsPage" class="hidden fade-in">
+            <div class="gradient-bg text-white py-16 relative overflow-hidden">
+                <div class="absolute inset-0 hero-pattern opacity-30"></div>
+                <div class="container mx-auto px-4 relative z-10 text-center">
+                    <div
+                        class="w-20 h-20 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-calendar-check text-4xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4">المناسبات المدرسية</h2>
+                    <p class="text-blue-200 text-lg max-w-2xl mx-auto">تعرف على الفعاليات والمناسبات القادمة في المدرسة
+                    </p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 py-12">
+                <!-- Calendar View Toggle -->
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex gap-2">
+                        <button onclick="toggleEventView('grid')" class="px-4 py-2 rounded-lg bg-blue-600 text-white"><i
+                                class="fas fa-th-large"></i></button>
+                        <button onclick="toggleEventView('list')"
+                            class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700"><i class="fas fa-list"></i></button>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">يناير 2026</h3>
+                </div>
+                <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Events loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Radio Page -->
+        <section id="radioPage" class="hidden fade-in">
+            <div class="gradient-bg text-white py-16 relative overflow-hidden">
+                <div class="absolute inset-0 hero-pattern opacity-30"></div>
+                <div class="container mx-auto px-4 relative z-10 text-center">
+                    <div
+                        class="w-20 h-20 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-microphone-alt text-4xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4">الإذاعة المدرسية</h2>
+                    <p class="text-blue-200 text-lg max-w-2xl mx-auto">تابع فقرات الإذاعة المدرسية اليومية</p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="radioGrid">
+                    <!-- Radio broadcasts loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Competitions Page -->
+        <section id="competitionsPage" class="hidden fade-in">
+            <div class="gradient-bg text-white py-16 relative overflow-hidden">
+                <div class="absolute inset-0 hero-pattern opacity-30"></div>
+                <div class="container mx-auto px-4 relative z-10 text-center">
+                    <div
+                        class="w-20 h-20 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-trophy text-4xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4">المسابقات المدرسية</h2>
+                    <p class="text-blue-200 text-lg max-w-2xl mx-auto">شارك في المسابقات واكتشف مواهبك</p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="competitionsGrid">
+                    <!-- Competitions loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Sports Page -->
+        <section id="sportsPage" class="hidden fade-in">
+            <div class="gradient-bg text-white py-16 relative overflow-hidden">
+                <div class="absolute inset-0 hero-pattern opacity-30"></div>
+                <div class="container mx-auto px-4 relative z-10 text-center">
+                    <div
+                        class="w-20 h-20 bg-white/10 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-running text-4xl"></i>
+                    </div>
+                    <h2 class="text-4xl font-bold mb-4">الأنشطة الرياضية</h2>
+                    <p class="text-blue-200 text-lg max-w-2xl mx-auto">تابع نتائج المباريات والبطولات الرياضية</p>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 py-12">
+                <!-- Sports Tabs -->
+                <div class="flex flex-wrap gap-2 mb-8 justify-center" id="sportsTabs">
+                    <!-- Sports tabs loaded dynamically -->
+                </div>
+                <div id="sportsContent" class="bg-white rounded-2xl shadow-lg p-8">
+                    <!-- Sports content loaded dynamically -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 modal bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden fade-in transform scale-95 transition-transform"
+            id="loginCard">
+            <div class="gradient-bg p-8 text-white text-center relative overflow-hidden">
+                <div class="absolute inset-0 hero-pattern opacity-20"></div>
+                <div class="relative z-10">
+                    <div
+                        class="w-20 h-20 bg-white/20 backdrop-blur rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-school text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">تسجيل دخول</h3>
+                    <p class="text-blue-200 mt-1">System Login</p>
+                </div>
+            </div>
+            <div class="p-8">
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-bold mb-2 flex items-center gap-2">
+                        <i class="fas fa-users-cog text-blue-500"></i>نوع المستخدم
+                    </label>
+                    <select id="userType"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition bg-gray-50">
+                        <option value="student">👨‍🎓 طالب / Student</option>
+                        <option value="teacher">👩‍🏫 معلم / Teacher</option>
+                        <option value="admin">🧑‍💼 إدارة / Admin</option>
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-gray-700 font-bold mb-2 flex items-center gap-2">
+                        <i class="fas fa-user text-blue-500"></i>اسم المستخدم
+                    </label>
+                    <input type="text" id="username"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition bg-gray-50"
+                        placeholder="أدخل اسم المستخدم">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2 flex items-center gap-2">
+                        <i class="fas fa-lock text-blue-500"></i>كلمة المرور
+                    </label>
+                    <input type="password" id="password"
+                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition bg-gray-50"
+                        placeholder="أدخل كلمة المرور">
+                </div>
+                <button onclick="login()"
+                    class="w-full gradient-bg hover:opacity-90 text-white py-4 rounded-xl font-bold transition mb-4 flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i>دخول للنظام
+                </button>
+                <button onclick="closeLoginModal()"
+                    class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-4 rounded-xl font-bold transition">
+                    إلغاء
+                </button>
+                <div class="mt-4 text-center text-sm text-gray-500">
+                    <p>للتجربة: استخدم أي اسم مستخدم</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Modal -->
+    <div id="contentModal" class="hidden fixed inset-0 modal bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-auto fade-in">
+            <div id="modalHeader" class="gradient-bg p-6 text-white">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                        <p id="modalSubtitle" class="text-blue-200 mt-1"></p>
+                    </div>
+                    <button onclick="closeContentModal()"
+                        class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="modalBody" class="p-6">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div id="dashboardContainer" class="hidden">
+        <!-- Dashboard will be rendered here -->
+    </div>
+
+    <!-- Footer -->
+    <footer id="publicFooter" class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-14 h-14 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center">
+                            <i class="fas fa-school text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl">WE School</h3>
+                            <p class="text-blue-200 text-sm">WE EL_Mansura School</p>
+                        </div>
+                    </div>
+                    <p class="text-blue-200 mb-6 leading-relaxed">نقدم تعليمياً متميزاً يجمع بين الأصالة والحداثة، نسعى
+                        لتطوير مهارات الطلاب وتأهيلهم للمستقبل.</p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4 flex items-center gap-2">
+                        <i class="fas fa-link"></i>روابط سريعة
+                    </h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" onclick="showPage('home')"
+                                class="text-blue-200 hover:text-white transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-left text-xs"></i>الرئيسية</a></li>
+                        <li><a href="#" onclick="showPage('news')"
+                                class="text-blue-200 hover:text-white transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-left text-xs"></i>الأخبار</a></li>
+                        <li><a href="#" onclick="showPage('events')"
+                                class="text-blue-200 hover:text-white transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-left text-xs"></i>المناسبات</a></li>
+                        <li><a href="#" onclick="showPage('radio')"
+                                class="text-blue-200 hover:text-white transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-left text-xs"></i>الإذاعة المدرسية</a></li>
+                        <li><a href="#" onclick="showPage('competitions')"
+                                class="text-blue-200 hover:text-white transition flex items-center gap-2"><i
+                                    class="fas fa-chevron-left text-xs"></i>المسابقات</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-4 flex items-center gap-2">
+                        <i class="fas fa-address-book"></i>تواصل معنا
+                    </h4>
+                    <ul class="space-y-3 text-blue-200">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt mt-1"></i>
+                            <span>المنصوره </span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone"></i>
+                            <span>012-3456789</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-fax"></i>
+                            <span>012-3456790</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@altafaq.edu</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/20 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-blue-200 text-sm">النظام الذكي لإدارة المدرسة </p>
+                    <div class="flex gap-6 text-sm text-blue-200">
+                        <a href="#" class="hover:text-white transition">سياسة الخصوصية</a>
+                        <a href="#" class="hover:text-white transition">الشروط والأحكام</a>
+                        <a href="#" class="hover:text-white transition">خريطة الموقع</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Application State
+        let currentUser = null;
+        let isEnglish = false;
+        let selectedSport = 'football';
+
+        // Data Store
+        const data = {
+            news: [
+                { id: 1, title: 'المدرسة تحصد المركز الأول في مسابقة الرياضيات الوطنية', date: '2024-01-15', category: 'إنجاز', image: '🏆', desc: 'فاز طلابنا المتميزون بالمرتبة الأولى في المسابقة الوطنية للرياضيات على مستوى المنطقة، مما يعكس المستوى التعليمي الرفيع الذي تتميز به مدرستنا.', author: 'إدارة المدرسة', views: 1250 },
+                { id: 2, title: 'افتتاح مختبر العلوم الجديد بتجهيزات حديثة', date: '2024-01-10', category: 'منشآت', image: '🔬', desc: 'تم افتتاح مختبر علوم مجهز بأحدث الأجهزة التعليمية المتطورة لخدمة الطلاب في إجراء تجاربهم العلمية.', author: 'أ. أحمد', views: 890 },
+                { id: 3, title: 'رحلة ميدانية لمتحف التاريخ الطبيعي', date: '2024-01-05', category: 'أنشطة', image: '🏛️', desc: 'قام الطلاب بزيارة تعليمية مفيدة لمتحف التاريخ الطبيعي ضمن أنشطة التعليم الترفيهي.', author: 'أ. سارة', views: 720 },
+                { id: 4, title: 'تكريم أوائل الطلاب في حفل الخطاب', date: '2024-01-01', category: 'إنجاز', image: '🎓', desc: 'تم تكريم الطلاب المتفوقين دراسياً في حفل كبير حضره أولياء الأمور والضيوف الكرام.', author: 'إدارة المدرسة', views: 1560 },
+                { id: 5, title: 'بدء التسجيل للفصل الدراسي الجديد', date: '2023-12-28', category: 'تعليم', image: '📝', desc: 'بدء استقبال طلبات التسجيل للفصل الدراسي الجديد 2024/2025 للمراحل المختلفة.', author: 'إدارة المدرسة', views: 2100 },
+                { id: 6, title: 'مدرسة التفوق تفوز بالمركز الأول في دوري المدارس', date: '2023-12-25', category: 'إنجاز', image: '⚽', desc: 'فاز فريق كرة القدم بالمركز الأول في دوري المدارس بعد منافسة قوية مع المدارس الأخرى.', author: 'أ. محمد', views: 980 }
+            ],
+            events: [
+                { id: 1, title: 'حفل يوم العلم', date: '2024-02-20', time: 'صباحاً - 8:00', location: 'قاعة الاحتفالات الكبرى', desc: 'احتفال سنوي بيوم العلم وتكريم المعلمين المتميزين، يشمل فقرات شعرية وأناشيد وعرضاً لإنجازات المدرسة.', organizer: 'إدارة الأنشطة', attendees: 500 },
+                { id: 2, title: 'المعرض العلمي السنوي', date: '2024-03-15', time: 'على مدار اليوم', location: 'صالة الأنشطة الطلابية', desc: 'عرض مشاريع الطلاب العلمية والابتكارات في مختلف المجالات، مع مسابقات وجوائز قيمة.', organizer: 'قسم العلوم', attendees: 800 },
+                { id: 3, title: 'يوم التراث الوطني', date: '2024-04-10', time: 'صباحاً - 7:30', location: 'فناء المدرسة الرئيسي', desc: 'فعاليات تراثية وتوعوية تتضمن معارض تراثية وعروضاً فنية وأنشطة تفاعلية.', organizer: 'قسم النشاط الطلابي', attendees: 600 },
+                { id: 4, title: 'مباراة كرة القدم - النهائي', date: '2024-02-28', time: 'مساءً - 4:00', location: 'ملعب المدرسة', desc: 'المباراة النهائية لبطولة كرة القدم بين الصفوف الثانوية.', organizer: 'قسم التربية البدنية', attendees: 300 }
+            ],
+            radio: [
+                { id: 1, day: 'الأحد', class: 'الصف الثاني ', date: '2026-01-14', presenter: 'أحمد ', items: ['القرآن الكريم', 'حديث الصباح', 'الحكمه', 'هل تعلم؟', 'الأسئلة'] },
+                { id: 2, day: '', class: 'الصف الثالث ', date: '2026-01-13', presenter: 'سارة ', items: ['القرآن الكريم', 'قصة قصيرة', 'أخبار المدرسة', 'مسابقة تفاعلية', 'كلمه اليوم'] },
+                { id: 3, day: 'الخميس', class: 'الصف الأول ', date: '2026-01-11', presenter: 'عمر ', items: ['القرآن الكريم', 'كلمة', ' الحكمه', 'أرقام وإحصائيات', 'نهاية الإذاعة'] },
+                { id: 4, day: 'الأربعاء', class: 'الصف الثاني ', date: '2026-01-10', presenter: 'فاطمة ', items: ['القرآن الكريم', ' معلومات', 'حكمة اليوم', 'لغة إنجليزية', 'تحدي الأسئلة'] }
+            ],
+            competitions: [
+                { id: 1, title: 'مسابقة الخط العربي', type: 'ثقافية', deadline: '2024-02-28', conditions: 'فئات الخط: الرقعة، الثلث، الكوفي\nمفتوحة لجميع المراحل', prize: 'مكافأة مالية 500 ريال وشهادة تقدير', participants: 45 },
+                { id: 2, title: 'مسابقة البحث العلمي', type: 'علمية', deadline: '2024-03-15', conditions: 'فرق من 3-5 طلاب\nموضوع بحثي حر', prize: 'مشاركة في المسابقة الإقليمية وجوائز مالية', participants: 28 },
+                { id: 3, title: 'مسابقة الرسم', type: 'فنية', deadline: '2024-02-20', conditions: 'موضوع: المدرسة الخضراء\nأقلام ملونة أو ألوان مائية', prize: 'أدوات فنية متميزة ومعرض خاص', participants: 67 },
+                { id: 4, title: 'مسابقة القصة القصيرة', type: 'ثقافية', deadline: '2024-03-01', conditions: 'قصة قصيرة 500-1000 كلمة\nموضوع: وطني', prize: 'نشر القصة في المجلة المدرسية وجائزة مالية', participants: 52 }
+            ],
+            sports: [
+                {
+                    id: 'football', name: 'كرة القدم', icon: '⚽', teams: 8, status: 'active', results: [
+                        { round: 'النهائي', team1: 'الصف الثالث ث', team2: 'الصف الثاني ث', score: '3 - 1', winner: 'الصف الثالث ث' },
+                        { round: 'نصف النهائي', team1: 'الصف الثالث ث', team2: 'الصف الأول ث', score: '2 - 0', winner: 'الصف الثالث ث' },
+                        { round: 'نصف النهائي', team1: 'الصف الثاني ث', team2: 'الصف الثاني ابتدائي', score: '4 - 2', winner: 'الصف الثاني ث' }
+                    ], standings: [
+                        { rank: 1, team: 'الصف الثالث ث', played: 4, won: 4, drawn: 0, lost: 0, points: 12 },
+                        { rank: 2, team: 'الصف الثاني ث', played: 4, won: 3, drawn: 0, lost: 1, points: 9 },
+                        { rank: 3, team: 'الصف الأول ث', played: 4, won: 2, drawn: 1, lost: 1, points: 7 },
+                        { rank: 4, team: 'الصف الثاني ابتدائي', played: 4, won: 1, drawn: 0, lost: 3, points: 3 }
+                    ]
+                },
+                { id: 'handball', name: 'كرة اليد', icon: '🤾', teams: 6, status: 'registration', results: [], standings: [] },
+                {
+                    id: 'volleyball', name: 'الكرة الطائرة', icon: '🏐', teams: 5, status: 'finished', results: [
+                        { round: 'الفائز', team1: 'الصف الثاني', team2: '', score: '-', winner: 'الصف الثاني' }
+                    ], standings: []
+                },
+                {
+                    id: 'chess', name: 'الشطرنج', icon: '♟️', teams: 12, status: 'active', results: [
+                        { round: 'النهائي', team1: 'أحمد سعيد', team2: 'عمر Khalid', score: '2 - 1', winner: 'أحمد سعيد' }
+                    ], standings: [
+                        { rank: 1, team: 'أحمد سعيد', played: 5, won: 5, drawn: 0, lost: 0, points: 10 },
+                        { rank: 2, team: 'عمر خالد', played: 5, won: 4, drawn: 0, lost: 1, points: 8 },
+                        { rank: 3, team: 'محمد علي', played: 5, won: 3, drawn: 1, lost: 1, points: 7 }
+                    ]
+                }
+            ],
+            schedules: [
+                { day: 'الأحد', periods: ['عربي', 'رياضيات', 'علوم', 'إنجليزي', 'تربية بدنية'] },
+                { day: 'الاثنين', periods: ['عربي', 'رياضيات', 'دراسات', 'علوم', 'فنون'] },
+                { day: 'الثلاثاء', periods: ['رياضيات', 'إنجليزي', 'علوم', 'حاسوب', 'تربية بدنية'] },
+                { day: 'الأربعاء', periods: ['عربي', 'رياضيات', 'دراسات', 'إنجليزي', 'نشاط'] },
+                { day: 'الخميس', periods: ['علوم', 'رياضيات', 'عربي', 'حاسوب', 'طابور'] }
+            ],
+            homework: [
+                { subject: 'الرياضيات', task: 'حل تمارين ص 45-48', due: '2024-01-17', status: 'pending', icon: '📐' },
+                { subject: 'العربي', task: 'كتابة فقرة عن عطلة نهاية الأسبوع', due: '2024-01-16', status: 'pending', icon: '📝' },
+                { subject: 'الإنجليزي', task: 'مفردات الوحدة 5 وحفظها', due: '2024-01-18', status: 'completed', icon: '📚' },
+                { subject: 'العلوم', task: 'تجربة ص 23 في الكراس', due: '2024-01-19', status: 'pending', icon: '🔬' }
+            ],
+            exams: [
+                { subject: 'الرياضيات', date: '2024-01-25', time: '10:00 صباحاً', type: 'اختبار قصير', topics: 'الكسور والأعداد العشرية' },
+                { subject: 'العلوم', date: '2024-01-28', time: '11:00 صباحاً', type: 'امتحان شهر', topics: 'الضوء والصوت' },
+                { subject: 'الإنجليزي', date: '2024-01-30', time: '9:00 صباحاً', type: 'امتحان شهر', topics: 'Units 4-5' }
+            ],
+            attendance: [
+                { date: '2024-01-14', status: 'present', time: '07:30', reason: '-' },
+                { date: '2024-01-13', status: 'present', time: '07:25', reason: '-' },
+                { date: '2024-01-11', status: 'absent', time: '-', reason: 'مرض' },
+                { date: '2024-01-10', status: 'present', time: '07:20', reason: '-' },
+                { date: '2024-01-09', status: 'late', time: '08:05', reason: 'زحام مروري' }
+            ],
+            grades: [
+                { subject: 'الرياضيات', first: 92, second: 88, average: 90, grade: 'ممتاز' },
+                { subject: 'العربي', first: 85, second: 89, average: 87, grade: 'جيد جداً' },
+                { subject: 'الإنجليزي', first: 78, second: 82, average: 80, grade: 'جيد' },
+                { subject: 'العلوم', first: 90, second: 94, average: 92, grade: 'ممتاز' },
+                { subject: 'الدراسات', first: 88, second: 86, average: 87, grade: 'جيد جداً' }
+            ],
+            announcements: [
+                { id: 1, title: 'إجازة نهاية الفصل', content: 'نأمل من الجميع العلم بأن إجازة نهاية الفصل الدراسي تبدأ من يوم السبت القادم ولمدة أسبوعين.', date: '2024-01-15', priority: 'high' },
+                { id: 2, title: 'توزيع الكتب الجديدة', content: 'سيتم توزيع الكتب المدرسية الجديدة بدءاً من يوم الأحد في مكتبة المدرسة.', date: '2024-01-14', priority: 'medium' },
+                { id: 3, title: 'اجتماع أولياء الأمور', content: 'ندعو أولياء الأمور لحضور اجتماع نهاية الفصل يوم الخميس القادم.', date: '2024-01-12', priority: 'low' }
+            ],
+            students: [
+                { id: 1, name: 'أحمد محمد', grade: 'أ', status: 'present' },
+                { id: 2, name: 'سارة علي', grade: 'ب', status: 'present' },
+                { id: 3, name: 'عمر حسن', grade: 'أ', status: 'absent' },
+                { id: 4, name: 'فاطمة أحمد', grade: 'ج', status: 'present' },
+                { id: 5, name: 'خالد Ibrahim', grade: 'ب', status: 'late' },
+                { id: 6, name: 'منى سعيد', grade: 'أ', status: 'present' },
+                { id: 7, name: 'ياسر Khalid', grade: 'ب', status: 'present' },
+                { id: 8, name: 'نورة Hassan', grade: 'ج', status: 'absent' }
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNews();
+            loadEvents();
+            loadRadio();
+            loadCompetitions();
+            loadSports();
+            checkSession();
+            updateNavActive();
+        });
+
+        function updateNavActive() {
+            const currentPage = document.querySelector('section:not(.hidden)')?.id?.replace('Page', '') || 'home';
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('onclick')?.includes(currentPage)) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            const pageSection = document.getElementById(page + 'Page');
+            if (pageSection) {
+                pageSection.classList.remove('hidden');
+                pageSection.classList.add('fade-in');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateNavActive();
+            closeMobileMenu();
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function toggleLanguage() {
+            isEnglish = !isEnglish;
+            document.documentElement.lang = isEnglish ? 'en' : 'ar';
+            document.documentElement.dir = isEnglish ? 'ltr' : 'rtl';
+            document.getElementById('langLabel').textContent = isEnglish ? 'English' : 'عربي';
+            showToast(isEnglish ? 'Language changed to English' : 'تم تغيير اللغة إلى العربية', 'success');
+        }
+
+        function scrollSlider(id, offset) {
+            const slider = document.getElementById(id);
+            slider.scrollBy({ left: offset, behavior: 'smooth' });
+        }
+
+        function login() {
+            const userType = document.getElementById('userType').value;
+            const username = document.getElementById('username').value || 'مستخدم';
+
+            currentUser = {
+                type: userType,
+                name: username,
+                id: Math.random().toString(36).substr(2, 9)
+            };
+
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            closeLoginModal();
+            showToast(`مرحباً بك يا ${username}!`, 'success');
+            showDashboard();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            document.getElementById('dashboardContainer').classList.add('hidden');
+            document.querySelectorAll('main > section').forEach(s => s.classList.remove('hidden'));
+            document.getElementById('publicFooter').classList.remove('hidden');
+            showPage('home');
+            showToast('تم تسجيل الخروج بنجاح', 'info');
+        }
+
+        function checkSession() {
+            const saved = localStorage.getItem('currentUser');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showDashboard();
+            }
+        }
+
+        function showDashboard() {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('publicFooter').classList.add('hidden');
+            document.getElementById('dashboardContainer').classList.remove('hidden');
+
+            const dashboard = document.getElementById('dashboardContainer');
+
+            switch (currentUser.type) {
+                case 'admin':
+                    renderAdminDashboard(dashboard);
+                    break;
+                case 'teacher':
+                    renderTeacherDashboard(dashboard);
+                    break;
+                case 'student':
+                    renderStudentDashboard(dashboard);
+                    break;
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-circle', info: 'fa-info-circle' };
+            const colors = { success: 'green', error: 'red', warning: 'yellow', info: 'blue' };
+
+            toast.className = `toast bg-white rounded-xl shadow-lg p-4 flex items-center gap-3 border-r-4 border-${colors[type]}-500`;
+            toast.innerHTML = `
+                <i class="fas ${icons[type]} text-${colors[type]}-500 text-xl"></i>
+                <span class="font-medium text-gray-700">${message}</span>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Render Functions
+        function renderAdminDashboard(container) {
+            container.innerHTML = `
+                <div class="min-h-screen bg-gray-100" dir="rtl">
+                    <!-- Dashboard Nav -->
+                    <nav class="gradient-bg shadow-lg">
+                        <div class="container mx-auto px-4 py-4">
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-user-shield text-white text-xl"></i>
+                                    </div>
+                                    <div class="text-white">
+                                        <h1 class="font-bold text-lg">لوحة الإدارة</h1>
+                                        <p class="text-blue-200 text-sm">Admin Dashboard</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <button class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                        <i class="fas fa-bell"></i>
+                                        <span class="bg-red-500 w-5 h-5 rounded-full text-xs flex items-center justify-center">3</span>
+                                    </button>
+                                    <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg">
+                                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div class="text-white">
+                                            <p class="font-bold text-sm">${currentUser.name}</p>
+                                            <p class="text-blue-200 text-xs">مدير النظام</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        خروج
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <!-- Dashboard Content -->
+                    <div class="container mx-auto px-4 py-8">
+                        <!-- Stats -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">إجمالي الطلاب</p>
+                                        <h3 class="text-3xl font-bold text-blue-600">1,250</h3>
+                                    </div>
+                                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-green-500 text-sm">
+                                    <i class="fas fa-arrow-up ml-1"></i>
+                                    <span>+5% عن الشهر السابق</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">المعلمين</p>
+                                        <h3 class="text-3xl font-bold text-green-600">85</h3>
+                                    </div>
+                                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-chalkboard-teacher text-green-600 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-green-500 text-sm">
+                                    <i class="fas fa-arrow-up ml-1"></i>
+                                    <span>+2 جديدة</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">نسبة الحضور</p>
+                                        <h3 class="text-3xl font-bold text-purple-600">98%</h3>
+                                    </div>
+                                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-check-circle text-purple-600 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-green-500 text-sm">
+                                    <i class="fas fa-minus ml-1"></i>
+                                    <span>مستقرة</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">الأخبار</p>
+                                        <h3 class="text-3xl font-bold text-orange-600">45</h3>
+                                    </div>
+                                    <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-newspaper text-orange-600 text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-blue-500 text-sm">
+                                    <i class="fas fa-plus ml-1"></i>
+                                    <span>3 جديدة</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions & Reports -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                            <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-plus-circle text-green-500"></i>إضافة محتوى جديد
+                                </h3>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    <button onclick="openContentModal('news')" class="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition group text-center">
+                                        <i class="fas fa-newspaper text-2xl text-gray-400 group-hover:text-blue-500 mb-2"></i>
+                                        <p class="font-bold text-gray-700">أخبار</p>
+                                    </button>
+                                    <button onclick="openContentModal('events')" class="p-4 border-2 border-gray-200 rounded-xl hover:border-yellow-500 hover:bg-yellow-50 transition group text-center">
+                                        <i class="fas fa-calendar-alt text-2xl text-gray-400 group-hover:text-yellow-500 mb-2"></i>
+                                        <p class="font-bold text-gray-700">مناسبات</p>
+                                    </button>
+                                    <button onclick="openContentModal('radio')" class="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition group text-center">
+                                        <i class="fas fa-microphone text-2xl text-gray-400 group-hover:text-blue-500 mb-2"></i>
+                                        <p class="font-bold text-gray-700">إذاعة</p>
+                                    </button>
+                                    <button onclick="openContentModal('competitions')" class="p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition group text-center">
+                                        <i class="fas fa-trophy text-2xl text-gray-400 group-hover:text-purple-500 mb-2"></i>
+                                        <p class="font-bold text-gray-700">مسابقات</p>
+                                    </button>
+                                    <button onclick="openContentModal('sports')" class="p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition group text-center">
+                                        <i class="fas fa-futbol text-2xl text-gray-400 group-hover:text-green-500 mb-2"></i>
+                                        <p class="font-bold text-gray-700">رياضة</p>
+                                    </button>
+                                    <button class="p-4 border-2 border-gray-200 rounded-xl hover:border-red-500 hover:bg-red-50 transition group text-center">
+                                        <i class="fas fa-users-cog text-2xl text-gray-400 group-hover:text-red-500 mb-2"></i>
+                                        <p class="font-bold text-gray-700">مستخدمين</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-chart-pie text-blue-500"></i>التقارير
+                                </h3>
+                                <div class="space-y-3">
+                                    <button class="w-full text-right p-3 bg-gray-50 hover:bg-blue-50 rounded-lg transition flex items-center gap-3">
+                                        <i class="fas fa-file-alt text-blue-500 w-8"></i>
+                                        <span class="text-gray-700">تقرير الحضور اليومي</span>
+                                    </button>
+                                    <button class="w-full text-right p-3 bg-gray-50 hover:bg-green-50 rounded-lg transition flex items-center gap-3">
+                                        <i class="fas fa-chart-bar text-green-500 w-8"></i>
+                                        <span class="text-gray-700">إحصائيات الدرجات</span>
+                                    </button>
+                                    <button class="w-full text-right p-3 bg-gray-50 hover:bg-purple-50 rounded-lg transition flex items-center gap-3">
+                                        <i class="fas fa-users text-purple-500 w-8"></i>
+                                        <span class="text-gray-700">قائمة الطلاب</span>
+                                    </button>
+                                    <button class="w-full text-right p-3 bg-gray-50 hover:bg-yellow-50 rounded-lg transition flex items-center gap-3">
+                                        <i class="fas fa-chalkboard-teacher text-yellow-500 w-8"></i>
+                                        <span class="text-gray-700">جدول الحصص</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-history text-gray-500"></i>أحدث النشاطات
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-plus text-green-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-bold text-gray-800">تم إضافة خبر جديد</p>
+                                        <p class="text-sm text-gray-500">من قبل أ. أحمد - منذ ساعة</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user-plus text-blue-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-bold text-gray-800">تسجيل طالب جديد</p>
+                                        <p class="text-sm text-gray-500">أحمد - منذ 3 ساعات</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-edit text-yellow-500"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-bold text-gray-800">تحديث جدول الحصص</p>
+                                        <p class="text-sm text-gray-500">من قبل الإدارة - منذ يوم</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTeacherDashboard(container) {
+            container.innerHTML = `
+                <div class="min-h-screen bg-gray-100" dir="rtl">
+                    <nav class="gradient-bg shadow-lg">
+                        <div class="container mx-auto px-4 py-4">
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                                    </div>
+                                    <div class="text-white">
+                                        <h1 class="font-bold text-lg">لوحة المعلم</h1>
+                                        <p class="text-blue-200 text-sm">Teacher Dashboard</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg">
+                                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div class="text-white">
+                                            <p class="font-bold text-sm">${currentUser.name}</p>
+                                            <p class="text-blue-200 text-xs">معلم الرياضيات</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        خروج
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div class="container mx-auto px-4 py-8">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <!-- Attendance -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-user-check text-green-500"></i>تسجيل الحضور
+                                </h3>
+                                <div class="mb-4">
+                                    <label class="block text-gray-600 mb-2 text-sm">اختر الصف</label>
+                                    <select id="classSelect" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500">
+                                        <option>الصف الأول </option>
+                                        <option>الصف الثاني </option>
+                                        <option>الصف الثالث </option>
+                                    </select>
+                                </div>
+                                <div class="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                                    ${data.students.slice(0, 5).map(s => `
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                            <span class="font-medium text-gray-700">${s.name}</span>
+                                            <div class="flex gap-2">
+                                                <button onclick="markAttendance(${s.id}, 'present')" class="w-8 h-8 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center justify-center">
+                                                    <i class="fas fa-check text-xs"></i>
+                                                </button>
+                                                <button onclick="markAttendance(${s.id}, 'absent')" class="w-8 h-8 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center justify-center">
+                                                    <i class="fas fa-times text-xs"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold transition">
+                                    <i class="fas fa-save ml-2"></i>حفظ الحضور
+                                </button>
+                            </div>
+
+                            <!-- Add Homework -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-book-open text-blue-500"></i>إضافة واجب
+                                </h3>
+                                <div class="space-y-3">
+                                    <input type="text" placeholder="عنوان الواجب" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                                    <textarea placeholder="وصف الواجب" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 h-24"></textarea>
+                                    <input type="date" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500">
+                                    <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-bold transition">
+                                        <i class="fas fa-plus ml-2"></i>إضافة الواجب
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Add Announcement -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-bullhorn text-yellow-500"></i>نشر إعلان
+                                </h3>
+                                <div class="space-y-3">
+                                    <input type="text" placeholder="عنوان الإعلان" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500">
+                                    <textarea placeholder="محتوى الإعلان" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 h-24"></textarea>
+                                    <select class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500">
+                                        <option>عام</option>
+                                        <option>لصف محدد</option>
+                                        <option>للأباء فقط</option>
+                                    </select>
+                                    <button class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-xl font-bold transition">
+                                        <i class="fas fa-paper-plane ml-2"></i>نشر الإعلان
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Schedule -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-clock text-purple-500"></i>جدول الحصص اليوم
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="p-3 text-right rounded-tl-lg">الوقت</th>
+                                            <th class="p-3 text-right">الحصة</th>
+                                            <th class="p-3 text-right">الصف</th>
+                                            <th class="p-3 text-right rounded-tr-lg">القاعة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b"><td class="p-3">7:30 - 8:15</td><td>الرياضيات</td><td>الصف الثاني</td><td>101</td></tr>
+                                        <tr class="border-b"><td class="p-3">8:15 - 9:00</td><td>الرياضيات</td><td>الصف الثالث</td><td>102</td></tr>
+                                        <tr class="border-b"><td class="p-3">9:00 - 9:45</td><td>الرياضيات</td><td>الصف الأول</td><td>103</td></tr>
+                                        <tr><td class="p-3">10:00 - 10:45</td><td>الرياضيات</td><td>الصف الثاني</td><td>104</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStudentDashboard(container) {
+            container.innerHTML = `
+                <div class="min-h-screen bg-gray-100" dir="rtl">
+                    <nav class="gradient-bg shadow-lg">
+                        <div class="container mx-auto px-4 py-4">
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-user-graduate text-white text-xl"></i>
+                                    </div>
+                                    <div class="text-white">
+                                        <h1 class="font-bold text-lg">لوحة الطالب</h1>
+                                        <p class="text-blue-200 text-sm">Student Dashboard</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <button class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                        <i class="fas fa-bell"></i>
+                                        <span class="bg-red-500 w-5 h-5 rounded-full text-xs flex items-center justify-center">2</span>
+                                    </button>
+                                    <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg">
+                                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div class="text-white">
+                                            <p class="font-bold text-sm">${currentUser.name}</p>
+                                            <p class="text-blue-200 text-xs">الصف الثالث </p>
+                                        </div>
+                                    </div>
+                                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        خروج
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div class="container mx-auto px-4 py-8">
+                        <!-- Welcome Banner -->
+                        <div class="gradient-bg rounded-2xl p-6 mb-8 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-2xl font-bold mb-2">مرحباً، ${currentUser.name}! 👋</h2>
+                                    <p class="text-blue-200">اليوم هو ${data.schedules[0].day} - ${new Date().toLocaleDateString('ar-SA')}</p>
+                                </div>
+                                <div class="hidden md:block text-6xl">📚</div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+                                <i class="fas fa-calendar-alt text-3xl mb-3 opacity-50"></i>
+                                <h3 class="text-2xl font-bold">${data.schedules[0].day}</h3>
+                                <p class="opacity-80 text-sm">اليوم الدراسي</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white">
+                                <i class="fas fa-book text-3xl mb-3 opacity-50"></i>
+                                <h3 class="text-2xl font-bold">${data.homework.filter(h => h.status === 'pending').length}</h3>
+                                <p class="opacity-80 text-sm">واجبات معلقة</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 text-white">
+                                <i class="fas fa-clipboard-list text-3xl mb-3 opacity-50"></i>
+                                <h3 class="text-2xl font-bold">${data.exams.length}</h3>
+                                <p class="opacity-80 text-sm">امتحانات قادمة</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
+                                <i class="fas fa-check-circle text-3xl mb-3 opacity-50"></i>
+                                <h3 class="text-2xl font-bold">95%</h3>
+                                <p class="opacity-80 text-sm">نسبة الحضور</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Schedule -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-clock text-blue-500"></i>جدول الحصص
+                                </h3>
+                                <div class="space-y-2">
+                                    ${data.schedules[0].periods.map((period, i) => `
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-blue-50 transition">
+                                            <div class="flex items-center gap-3">
+                                                <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">${i + 1}</span>
+                                                <span class="font-medium text-gray-800">${period}</span>
+                                            </div>
+                                            <span class="text-gray-400 text-sm">50 دقيقة</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Homework -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-book-open text-green-500"></i>الواجبات
+                                </h3>
+                                <div class="space-y-3">
+                                    ${data.homework.map(hw => `
+                                        <div class="flex items-center justify-between p-3 ${hw.status === 'completed' ? 'bg-green-50' : 'bg-gray-50'} rounded-xl border ${hw.status === 'completed' ? 'border-green-200' : 'border-gray-200'}">
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-2xl">${hw.icon}</span>
+                                                <div>
+                                                    <p class="font-bold text-gray-800">${hw.subject}</p>
+                                                    <p class="text-sm text-gray-500">${hw.task}</p>
+                                                </div>
+                                            </div>
+                                            <span class="px-3 py-1 rounded-full text-xs ${hw.status === 'completed' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                                                ${hw.status === 'completed' ? 'مكتمل' : hw.due}
+                                            </span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Exams -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-clipboard-check text-yellow-500"></i>الامتحانات
+                                </h3>
+                                <div class="space-y-3">
+                                    ${data.exams.map(exam => `
+                                        <div class="p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="font-bold text-gray-800">${exam.subject}</span>
+                                                <span class="text-xs bg-yellow-200 text-yellow-700 px-2 py-1 rounded">${exam.type}</span>
+                                            </div>
+                                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                <span class="flex items-center gap-1"><i class="far fa-calendar"></i>${exam.date}</span>
+                                                <span class="flex items-center gap-1"><i class="far fa-clock"></i>${exam.time}</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <!-- Attendance -->
+                            <div class="bg-white rounded-2xl shadow-lg p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <i class="fas fa-user-check text-purple-500"></i>سجل الحضور
+                                </h3>
+                                <div class="space-y-2">
+                                    ${data.attendance.map(a => `
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                            <span class="text-gray-600">${a.date}</span>
+                                            <span class="flex items-center gap-2">
+                                                ${a.time !== '-' ? `<span class="text-xs text-gray-400">${a.time}</span>` : ''}
+                                                <span class="px-3 py-1 rounded-full text-xs ${a.status === 'present' ? 'bg-green-100 text-green-600' : a.status === 'late' ? 'bg-yellow-100 text-yellow-600' : 'bg-red-100 text-red-600'}">
+                                                    ${a.status === 'present' ? 'حاضر' : a.status === 'late' ? 'متأخر' : 'غائب'}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grades -->
+                        <div class="bg-white rounded-2xl shadow-lg p-6 mt-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-chart-line text-red-500"></i>الدرجات
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="p-3 text-right rounded-tl-lg">المادة</th>
+                                            <th class="p-3 text-right">النكويني الاول</th>
+                                            <th class="p-3 text-right">التكويني الثاني</th>
+                                            <th class="p-3 text-right">المتوسط</th>
+                                            <th class="p-3 text-right rounded-tr-lg">التقدير</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.grades.map(g => `
+                                            <tr class="border-b">
+                                                <td class="p-3 font-bold text-gray-800">${g.subject}</td>
+                                                <td class="p-3">${g.first}</td>
+                                                <td class="p-3">${g.second}</td>
+                                                <td class="p-3 font-bold text-blue-600">${g.average}</td>
+                                                <td class="p-3"><span class="px-3 py-1 rounded-full text-sm ${g.average >= 90 ? 'bg-green-100 text-green-600' : g.average >= 80 ? 'bg-blue-100 text-blue-600' : 'bg-yellow-100 text-yellow-600'}">${g.grade}</span></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openContentModal(type) {
+            const modal = document.getElementById('contentModal');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const body = document.getElementById('modalBody');
+
+            title.textContent = 'إضافة ' + (type === 'news' ? 'خبر جديد' : type === 'events' ? 'مناسبة جديدة' : type === 'radio' ? 'إذاعة جديدة' : type === 'competitions' ? 'مسابقة جديدة' : 'نشاط رياضي');
+            subtitle.textContent = 'أملأ البيانات أدناه';
+
+            body.innerHTML = `
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">العنوان</label>
+                        <input type="text" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500" placeholder="أدخل العنوان">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-bold mb-2">التفاصيل</label>
+                        <textarea class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 h-32" placeholder="أدخل التفاصيل"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">التاريخ</label>
+                            <input type="date" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">الوقت</label>
+                            <input type="time" class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeContentModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold transition">إلغاء</button>
+                        <button type="button" onclick="saveContent('${type}')" class="flex-1 gradient-bg hover:opacity-90 text-white py-3 rounded-xl font-bold transition">حفظ</button>
+                    </div>
+                </form>
+            `;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeContentModal() {
+            document.getElementById('contentModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function saveContent(type) {
+            closeContentModal();
+            showToast('تم حفظ المحتوى بنجاح', 'success');
+        }
+
+        function markAttendance(id, status) {
+            showToast(status === 'present' ? 'تم تسجيل الحضور' : 'تم تسجيل الغياب', 'success');
+        }
+
+        function filterNews(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+
+            loadNews(category);
+        }
+
+        function toggleEventView(view) {
+            showToast('تم تغيير العرض إلى ' + (view === 'grid' ? 'شبكة' : 'قائمة'), 'info');
+        }
+
+        function selectSport(sport) {
+            selectedSport = sport;
+            document.querySelectorAll('#sportsTabs button').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+            loadSportsContent();
+        }
+
+        // Load Data Functions
+        function loadNews(filter = 'all') {
+            const slider = document.getElementById('newsSlider');
+            const grid = document.getElementById('newsGrid');
+
+            const filteredNews = filter === 'all' ? data.news : data.news.filter(n => n.category === filter);
+
+            // Slider for home page
+            slider.innerHTML = data.news.slice(0, 5).map(item => `
+                <div class="min-w-[300px] md:min-w-[350px] bg-white rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="openNewsDetail(${item.id})">
+                    <div class="h-40 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-7xl">
+                        ${item.image}
+                    </div>
+                    <div class="p-5">
+                        <span class="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold mb-2">${item.category}</span>
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 line-clamp-2">${item.title}</h3>
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span><i class="far fa-calendar ml-1"></i>${item.date}</span>
+                            <span><i class="far fa-eye ml-1"></i>${item.views}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Grid for news page
+            grid.innerHTML = filteredNews.map(item => `
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer hover-lift" onclick="openNewsDetail(${item.id})">
+                    <div class="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-8xl relative">
+                        ${item.image}
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-blue-600">
+                            ${item.category}
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl text-gray-800 mb-2">${item.title}</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">${item.desc}</p>
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span class="flex items-center"><i class="far fa-calendar ml-1"></i>${item.date}</span>
+                            <span class="flex items-center"><i class="far fa-user ml-1"></i>${item.author}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openNewsDetail(id) {
+            const news = data.news.find(n => n.id === id);
+            const modal = document.getElementById('contentModal');
+            document.getElementById('modalTitle').textContent = news.title;
+            document.getElementById('modalSubtitle').textContent = `${news.date} - ${news.category}`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="text-center mb-6">
+                    <span class="text-8xl">${news.image}</span>
+                </div>
+                <p class="text-gray-600 leading-relaxed mb-6">${news.desc}</p>
+                <div class="flex items-center justify-between text-sm text-gray-500 bg-gray-50 p-4 rounded-xl">
+                    <span class="flex items-center gap-2"><i class="far fa-user"></i>${news.author}</span>
+                    <span class="flex items-center gap-2"><i class="far fa-calendar"></i>${news.date}</span>
+                    <span class="flex items-center gap-2"><i class="far fa-eye"></i>${news.views} مشاهدة</span>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function loadEvents() {
+            const grid = document.getElementById('eventsGrid');
+            grid.innerHTML = data.events.map(item => `
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover hover-lift border-r-4 border-yellow-500">
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-calendar-check text-yellow-600 text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-xl text-gray-800 mb-2">${item.title}</h3>
+                            <p class="text-gray-600 mb-4">${item.desc}</p>
+                            <div class="flex flex-wrap gap-3 text-sm text-gray-500">
+                                <span class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-lg"><i class="far fa-calendar"></i>${item.date}</span>
+                                <span class="flex items-center gap-2 bg-green-50 px-3 py-1 rounded-lg"><i class="far fa-clock"></i>${item.time}</span>
+                                <span class="flex items-center gap-2 bg-purple-50 px-3 py-1 rounded-lg"><i class="fas fa-map-marker-alt"></i>${item.location}</span>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="text-xs text-gray-400"><i class="fas fa-user ml-1"></i>${item.organizer}</span>
+                                <button class="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                                    التفاصيل <i class="fas fa-arrow-left text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadRadio() {
+            const grid = document.getElementById('radioGrid');
+            grid.innerHTML = data.radio.map(item => `
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-microphone-alt text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">إذاعة يوم ${item.day}</h3>
+                            <p class="text-sm text-gray-500">${item.class}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 mb-4">
+                        ${item.items.map(i => `
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-blue-50 transition cursor-pointer">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-play text-white text-sm"></i>
+                                </div>
+                                <span class="text-gray-700 font-medium">${i}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex items-center justify-between text-sm text-gray-500 pt-4 border-t">
+                        <span class="flex items-center gap-2"><i class="far fa-user"></i>${item.presenter}</span>
+                        <span class="flex items-center gap-2"><i class="far fa-calendar"></i>${item.date}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadCompetitions() {
+            const grid = document.getElementById('competitionsGrid');
+            grid.innerHTML = data.competitions.map(item => `
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover hover-lift">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-trophy text-purple-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded font-bold">${item.type}</span>
+                            <h3 class="font-bold text-gray-800 mt-1">${item.title}</h3>
+                        </div>
+                    </div>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start gap-2 text-gray-600">
+                            <i class="fas fa-clock mt-1 text-purple-500"></i>
+                            <div>
+                                <p class="font-bold">الموعد النهائي</p>
+                                <p>${item.deadline}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2 text-gray-600">
+                            <i class="fas fa-list-check mt-1 text-purple-500"></i>
+                            <div>
+                                <p class="font-bold">الشروط</p>
+                                <p>${item.conditions}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2 text-green-600">
+                            <i class="fas fa-gift mt-1"></i>
+                            <div>
+                                <p class="font-bold">الجائزة</p>
+                                <p>${item.prize}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t flex items-center justify-between">
+                        <span class="text-sm text-gray-500"><i class="fas fa-users ml-1"></i>${item.participants} مشارك</span>
+                        <button onclick="registerCompetition(${item.id})" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-bold transition flex items-center gap-2">
+                            <i class="fas fa-user-plus"></i>سجل الآن
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadSports() {
+            const tabs = document.getElementById('sportsTabs');
+            tabs.innerHTML = data.sports.map(sport => `
+                <button onclick="selectSport('${sport.id}')" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-blue-600 hover:text-white transition flex items-center gap-2">
+                    <span>${sport.icon}</span>
+                    <span class="hidden sm:inline">${sport.name}</span>
+                </button>
+            `).join('');
+            loadSportsContent();
+        }
+
+        function loadSportsContent() {
+            const sport = data.sports.find(s => s.id === selectedSport);
+            const content = document.getElementById('sportsContent');
+
+            if (!sport) return;
+
+            let contentHtml = `
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="text-6xl">${sport.icon}</span>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">${sport.name}</h3>
+                        <p class="text-gray-500">${sport.teams} فريق | ${sport.status === 'active' ? 'في المسابقة' : sport.status === 'registration' ? 'قيد التسجيل' : 'انتهت'}</p>
+                    </div>
+                </div>
+            `;
+
+            if (sport.results.length > 0) {
+                contentHtml += `
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-trophy text-yellow-500"></i>النتائج
+                        </h4>
+                        <div class="space-y-2">
+                            ${sport.results.map(r => `
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                    <span class="font-bold text-gray-700">${r.round}</span>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-gray-600">${r.team1}</span>
+                                        <span class="font-bold text-blue-600 bg-blue-100 px-3 py-1 rounded-lg">${r.score}</span>
+                                        <span class="text-gray-600">${r.team2}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (sport.standings.length > 0) {
+                contentHtml += `
+                    <div>
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-list-ol text-green-500"></i>الترتيب
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="p-3 text-right">#</th>
+                                        <th class="p-3 text-right">الفريق</th>
+                                        <th class="p-3 text-right">لعب</th>
+                                        <th class="p-3 text-right">فاز</th>
+                                        <th class="p-3 text-right">تعادل</th>
+                                        <th class="p-3 text-right">خسر</th>
+                                        <th class="p-3 text-right">النقاط</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${sport.standings.map(s => `
+                                        <tr class="border-b">
+                                            <td class="p-3 font-bold ${s.rank <= 3 ? 'text-yellow-600' : 'text-gray-600'}">${s.rank}</td>
+                                            <td class="p-3 font-bold text-gray-800">${s.team}</td>
+                                            <td class="p-3">${s.played}</td>
+                                            <td class="p-3 text-green-600">${s.won}</td>
+                                            <td class="p-3">${s.drawn}</td>
+                                            <td class="p-3 text-red-600">${s.lost}</td>
+                                            <td class="p-3 font-bold text-blue-600">${s.points}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = contentHtml;
+        }
+
+        function registerCompetition(id) {
+            showToast('تم التسجيل في المسابقة بنجاح!', 'success');
+        }
+
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+                closeContentModal();
+            }
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('loginModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('loginModal')) closeLoginModal();
+        });
+        document.getElementById('contentModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('contentModal')) closeContentModal();
+        });
+    </script>
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</body>
+
+</html>
